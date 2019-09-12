@@ -1,6 +1,7 @@
 from collections import Counter
 from itertools import groupby
 from functools import lru_cache
+from operator import itemgetter
 
 #TODO get the source and destination Payload size for each protocol
 #     get the source and destination Payload size for each application
@@ -41,12 +42,16 @@ class Flow:
     def get_flows_for_applications(self, app):
         return self.__get_flows("appName", app)
 
+    def get_flows_per_packet(self):
+        flow_size = [int(f["totalDestinationPackets"]) + int(f["totalSourcePackets"]) for f in self.flow]
+        return Counter(flow_size)
+
     @lru_cache(maxsize=5)
     def __aggregate_in_out(self, name_in, name_out, key):
         t = [(f[key], int(f[name_in]) + int(f[name_out])) for f in self.flow
              if name_in in f and name_out in f]
-        u = t.sort(key=lambda x: x[0])
-        u = {key: sum(x[1] for x in group) for key, group in groupby(t, key=lambda x: x[0])}
+        u = t.sort(key=itemgetter(0))
+        u = {key: sum(x[1] for x in group) for key, group in groupby(t, key=itemgetter(0))}
         return u
 
     def __get_flows(self, name, value):

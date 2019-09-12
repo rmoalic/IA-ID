@@ -1,4 +1,5 @@
 import shelve
+import matplotlib.pyplot as plt
 from intruvu.flow import Flow
 from intruvu.loader import load_files
 
@@ -9,7 +10,14 @@ with shelve.open(FT, 'c') as ft:
 
 ft = shelve.open(FT, 'r')
 
-flow = Flow(ft[list(ft.keys())[0]])
+flow = Flow(ft[list(ft.keys())[1]])
+
+per = flow.get_flows_per_packet()
+plt.loglog(*zip(*sorted(per.items())), linestyle='None', marker=".")
+plt.xlabel("packet/flow")
+plt.ylabel("flows")
+plt.show()
+
 print(flow.get_protocols_count())
 print(flow.get_protocols())
 print(flow.get_flows_for_protocol("igmp"))
