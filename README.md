@@ -1,6 +1,6 @@
 Intruvu
 =======
 
-'''bash
+```bash
 bin/intruvu
-'''
+```

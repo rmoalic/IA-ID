@@ -1,5 +1,5 @@
 import shelve
-from intruvu.Flow import Flow
+from intruvu.flow import Flow
 from intruvu.loader import load_files
 
 FT = "fourre-tout"

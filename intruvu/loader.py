@@ -1,13 +1,10 @@
-from intruvu import Flow
 import xml.etree.ElementTree as ET
 from os import listdir, path
-import shelve
-
 
 
 def load_flows(file_name):
     """Load a list of flows from an xml file
-    
+
     :param file_name: path to the xml file to load
     :returns: list of dict containing flow information"""
     flows = list()
@@ -35,5 +32,3 @@ def load_files(dir_a, store=dict()):
         except Exception as e:
             print(e)
     return store
-
-
