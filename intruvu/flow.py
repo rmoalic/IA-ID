@@ -1,11 +1,8 @@
 from collections import Counter
 from itertools import groupby
 from functools import lru_cache
+from statistics import mean
 from operator import itemgetter
-
-
-def avg(liste):
-    return sum(liste) / len(liste)
 
 class Flow:
 
@@ -101,7 +98,7 @@ class Flow:
              for f in self.flow
              if name_in in f and name_out in f and key in f]
         t.sort(key=itemgetter(0))
-        u = {key: avg([x[1] for x in group])
+        u = {key: mean([x[1] for x in group])
              for key, group in groupby(t, key=itemgetter(0))}
         return u
 
