@@ -10,7 +10,8 @@ with shelve.open(FT, 'c') as ft:
 
 ft = shelve.open(FT, 'r')
 
-flow = Flow(ft[list(ft.keys())[1]])
+# flow = Flow(ft[list(ft.keys())[1]])
+flow = Flow([x for xs in ft.values() for x in xs])
 
 per = flow.get_flows_per_packet()
 plt.loglog(*zip(*sorted(per.items())), linestyle='None', marker=".")
