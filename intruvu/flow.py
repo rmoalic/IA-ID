@@ -71,13 +71,13 @@ class Flow:
         return dict(applications_packets)
 
     def get_flows_per_packet(self):
-        flow_size = [int(f["totalDestinationPackets"]) + int(f["totalSourcePackets"]) for f in self.flow]
+        flow_size = [int(f["totalDestinationPackets"]) + int(f["totalSourcePackets"]) for f in self.flow if "totalSourcePackets" in f and "totalDestinationPackets" in f]
         return Counter(flow_size)
 
     @lru_cache(maxsize=5)
     def __aggregate_in_out(self, name_in, name_out, key):
         t = [(f[key], int(f[name_in]) + int(f[name_out])) for f in self.flow
-             if name_in in f and name_out in f]
+             if name_in in f and name_out in f and key in f]
         t.sort(key=itemgetter(0))
         u = {key: sum(x[1] for x in group) for key, group in groupby(t, key=itemgetter(0))}
         return u
