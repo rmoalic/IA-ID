@@ -17,8 +17,16 @@ def load_flows(file_name):
     return flows
 
 
-def load_files(dir_a, store=dict()):
-    """Load flows from all xml files in a directory to a shelve"""
+def load_files(dir_a, store=None):
+    """
+    Load flows from all xml files in a directory to a supplied shelve
+
+    :param dir_a: directory to load files from
+    :param store: a key store to load the content in | "filname" -> list(dict(), dict()) |
+    :return: the store
+    """
+    if store is None:
+        store = dict()
     files = [path.join(dir_a, x) for x in listdir(dir_a) if ".xml" in x]
     for f in files:
         if f in store:

@@ -1,17 +1,27 @@
+import argparse
 import shelve
 import matplotlib.pyplot as plt
 from intruvu.flow import Flow
 from intruvu.loader import load_files
 
-FT = "fourre-tout"
+arg_parser = argparse.ArgumentParser(description='Intruder detection')
+arg_parser.add_argument("--cache", type=str, nargs=1, default="fourre-tout", required=False, help="name of the cache file")
+arg_parser.add_argument("--dir", type=str, nargs=1, default="./ISCX_train", required=False, help="directory to load the xml files from")
+arg_parser.add_argument("-e", type=bool, nargs=1, required=False, help="process one file only")
+
+args = arg_parser.parse_args()
+
+FT = args.cache
 
 with shelve.open(FT, 'c') as ft:
-    load_files('./ISCX_train', ft)
+    load_files(args.dir, ft)
 
 ft = shelve.open(FT, 'r')
 
-# flow = Flow(ft[list(ft.keys())[1]])
-flow = Flow([x for xs in ft.values() for x in xs])
+if args.e:
+    flow = Flow(ft[list(ft.keys())[1]])
+else:
+    flow = Flow([x for xs in ft.values() for x in xs])
 
 per = flow.get_flows_per_packet()
 plt.loglog(*zip(*sorted(per.items())), linestyle='None', marker=".")
