@@ -3,9 +3,9 @@ from itertools import groupby
 from functools import lru_cache
 from operator import itemgetter
 
-#TODO: get the source and destination Payload size for each protocol
-#     get the source and destination Payload size for each application
 
+def avg(liste):
+    return sum(liste) / len(liste)
 
 class Flow:
 
@@ -79,7 +79,7 @@ class Flow:
         t = [(f[key], int(f[name_in]) + int(f[name_out])) for f in self.flow
              if name_in in f and name_out in f and key in f]
         t.sort(key=itemgetter(0))
-        u = {key: sum(x[1] for x in group) for key, group in groupby(t, key=itemgetter(0))}
+        u = {key: avg([x[1] for x in group]) for key, group in groupby(t, key=itemgetter(0))}
         return u
 
     @lru_cache(maxsize=5)
@@ -87,7 +87,7 @@ class Flow:
         t = [(f[key], len(f[name_in]), len(f[name_out])) for f in self.flow
              if name_in in f and name_out in f and key in f and f[name_in] is not None and f[name_out] is not None]
         t.sort(key=itemgetter(0))
-        u = {key: (sum(x[1] for x in group), sum(x[2] for x in group)) for key, group in groupby(t, key=itemgetter(0))}
+        u = {key: [sum(e) for e in zip(*[(x[1],x[2]) for x in group])] for key, group in groupby(t, key=itemgetter(0))}
         return u
 
     def __get_flows(self, name, value):
