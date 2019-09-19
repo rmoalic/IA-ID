@@ -9,6 +9,7 @@ arg_parser = argparse.ArgumentParser(description='Intruder detection')
 arg_parser.add_argument("--cache", type=str, nargs=1, default="fourre-tout", required=False, help="name of the cache file")
 arg_parser.add_argument("--dir", type=str, nargs=1, default="./ISCX_train", required=False, help="directory to load the xml files from")
 arg_parser.add_argument("-e", action='store_true', required=False, help="process one file only")
+arg_parser.add_argument("-r", action='store_true', required=False, help="reindex")
 
 args = arg_parser.parse_args()
 
@@ -17,7 +18,8 @@ FT = args.cache
 es = Elasticsearch()
 print(es.info())
 
-index_files(args.dir, "flow", es)
+if args.r:
+    index_files(args.dir, "flow", es)
 
 #with shelve.open(FT, 'c') as ft:
 #    load_files(args.dir, ft)

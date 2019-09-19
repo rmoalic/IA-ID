@@ -42,7 +42,7 @@ def load_files(dir_a, store=None):
     return store
 
 
-def index_files(dir_a, index_name, es):
+def index_files(dir_a, index_name, es, bulk_size=45000):
     files = [path.join(dir_a, x) for x in listdir(dir_a) if ".xml" in x]
     if es.indices.exists(index_name):
         print("dropping index: {}".format(index_name))
@@ -66,7 +66,7 @@ def index_files(dir_a, index_name, es):
                 op_dict["index"]["_id"] = "{}-{}".format(f, i)
                 bulk_data.append(json.dumps(op_dict))
                 bulk_data.append(json.dumps(flw))
-                if i % 50000 == 0:
+                if i % bulk_size == bulk_size - 1:
                     print("bulk insert for {}, {}".format(f, i))
                     es.bulk(index=index_name, body=bulk_data, refresh=True)
                     bulk_data = list()
