@@ -12,7 +12,10 @@ def load_flows(file_name):
     for flow in root:
         flow_dict = dict()
         for e in flow:
-            flow_dict[e.tag] = e.text
+            try:
+                flow_dict[e.tag] = int(e.text)
+            except:
+                flow_dict[e.tag] = e.text
         flows.append(flow_dict)
     return flows
 
@@ -42,7 +45,7 @@ def load_files(dir_a, store=None):
     return store
 
 
-def index_files(dir_a, index_name, es, bulk_size=60000000):
+def index_files(dir_a, index_name, es, bulk_size=25000000):
     files = [path.join(dir_a, x) for x in listdir(dir_a) if ".xml" in x]
     if es.indices.exists(index_name):
         print("dropping index: {}".format(index_name))
