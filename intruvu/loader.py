@@ -42,7 +42,7 @@ def load_files(dir_a, store=None):
     return store
 
 
-def index_files(dir_a, index_name, es, bulk_size=45000):
+def index_files(dir_a, index_name, es, bulk_size=60000000):
     files = [path.join(dir_a, x) for x in listdir(dir_a) if ".xml" in x]
     if es.indices.exists(index_name):
         print("dropping index: {}".format(index_name))
@@ -53,6 +53,7 @@ def index_files(dir_a, index_name, es, bulk_size=45000):
     request_body["settings"]["number_of_replicas"] = 0
     print("creating index: {}".format(index_name))
     es.indices.create(index=index_name, body=json.dumps(request_body))
+    size = 0
     for f in files:
         print("loading file {}".format(f))
         try:
@@ -64,12 +65,17 @@ def index_files(dir_a, index_name, es, bulk_size=45000):
                 op_dict["index"]["_index"] = index_name
                 op_dict["index"]["_type"] = "tata"
                 op_dict["index"]["_id"] = "{}-{}".format(f, i)
-                bulk_data.append(json.dumps(op_dict))
-                bulk_data.append(json.dumps(flw))
-                if i % bulk_size == bulk_size - 1:
-                    print("bulk insert for {}, {}".format(f, i))
+                json_op_dict = json.dumps(op_dict)
+                json_flw = json.dumps(flw)
+                message_size = len(json_op_dict) + len(json_flw)
+                if size + message_size >= bulk_size:
+                    print("bulk insert for {}, {} {}".format(f, i, size+1))
                     es.bulk(index=index_name, body=bulk_data, refresh=True)
                     bulk_data = list()
+                    size = 0
+                size = size + message_size
+                bulk_data.append(json_op_dict)
+                bulk_data.append(json_flw)
             print("bulk insert for {}: end".format(f))
             es.bulk(index=index_name, body=bulk_data, refresh=True)
         except MemoryError:
