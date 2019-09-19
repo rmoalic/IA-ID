@@ -80,8 +80,9 @@ class FlowES:
             },
             "aggs": {
                 "group_by": {
-                    "terms":{
-                     "field": name+".keyword"
+                    "terms": {
+                        "field": name+".keyword",
+                        "size": 2147483647
                     }
                 }
             }
@@ -113,7 +114,8 @@ class FlowES:
             "aggs": {
                 "group_by": {
                     "terms": {
-                        "field": key+".keyword"
+                        "field": key+".keyword",
+                        "size": 2147483647
                     },
                     "aggs": {
                         "res": {
