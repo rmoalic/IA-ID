@@ -1,4 +1,5 @@
 import json
+import copy
 
 class FlowES:
 
@@ -70,7 +71,52 @@ class FlowES:
 
         :return: a "dict" with packet size as key and the number of occurrences as values
         """
-    pass
+        agg = {
+            "size": 0,
+            "query": {
+                "match_all": {}
+            },
+            "aggs": {
+                "group_by": {
+                    "terms": {
+                        "script": {
+                            "lang": "expression",
+                            "source": "doc['{}'] + doc['{}']".format("totalDestinationPackets", "totalSourcePackets")
+                        },
+                        "size": 2147483647
+                    }
+                }
+            }
+        }
+        try:
+            hits = self.es.search(index=self.index_name, body=json.dumps(agg))
+            H = hits['aggregations']
+            A = H['group_by']['buckets']
+        except Exception as e:
+            print(e)
+            A = dict()
+        return {float(h['key']): h['doc_count'] for h in A}
+
+    def __get_flows(self, name, value):
+        agg = {
+            "query": {
+                "bool": {
+                    "must": {
+                        "match": {name: value}
+                    }
+                }
+            }
+        }
+        hits = self.es.search(index=self.index_name, body=json.dumps(agg), scroll='2m', size=10000)
+        res = copy.deepcopy(hits['hits']['hits'])
+        sid = hits['_scroll_id']
+        while len(hits['hits']['hits']) > 0:
+            hits = self.es.scroll(scroll_id=sid, scroll='2m')
+            print("scroll", len(res), len(hits['hits']['hits']))
+            sid = hits['_scroll_id']
+            res.extend(copy.deepcopy(hits['hits']['hits']))
+        return [e['_source'] for e in res]
+
 
     def __count(self, name):
         agg = {
