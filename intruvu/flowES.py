@@ -1,5 +1,6 @@
 import json
 import copy
+from vectorization import insert_numerical_values, make_vector
 
 class FlowES:
 
@@ -44,6 +45,14 @@ class FlowES:
     def get_flows_for_application(self, app):
         """Get the list of flows for a given application"""
         return self.__get_flows("appName", app)
+
+    def get_vectors_for_application(self, app):
+        """Get the list of flows for a given application"""
+        flows = self.__get_flows("appName", app)
+        for f in flows:
+            f = insert_numerical_values(f)
+        [make_vector(f) for f in flows]
+        return [make_vector(f) for f in flows]
 
     def get_flows_count_by_application(self):
         """Get the number of flows for each application"""
@@ -105,7 +114,10 @@ class FlowES:
                         "match": {name: value}
                     }
                 }
-            }
+            },
+            "sort": [
+                "_doc"
+            ]
         }
         hits = self.es.search(index=self.index_name, body=json.dumps(agg), scroll='2m', size=10000)
         res = copy.deepcopy(hits['hits']['hits'])

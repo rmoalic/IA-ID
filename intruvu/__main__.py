@@ -38,6 +38,11 @@ plt.loglog(*zip(*sorted(per.items())), linestyle='None', marker=".")
 plt.xlabel("packet/flow")
 plt.ylabel("flows")
 plt.show()
+
+vect = flow.get_vectors_for_application("WebMediaAudio")
+for v in vect:
+    print(v)
+
 print(flow.get_protocols())
 # print(flow.get_flows_for_protocol("igmp"))
 # print(flow.get_flows_count_by_protocol())
