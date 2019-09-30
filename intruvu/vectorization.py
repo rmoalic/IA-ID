@@ -1,7 +1,5 @@
-import pyhash
-import ipaddress
-
-hash = pyhash.murmur1_32()
+from murmurhash import hash
+import re
 
 def direction_converter(direction):
     ret = 0
@@ -16,12 +14,25 @@ def direction_converter(direction):
     return ret
 
 
+def payload_hist(data):
+    array = {chr(x): 0 for x in range(255)}
+    if data is None:
+        return array.values()
+    ascii_data = list(re.sub("[^\x00-\x7f]", "", data))
+    for d in ascii_data:
+        array[d] = array[d] + 1
+    assert len(array) == 255
+    return array.values()
+
+
 def insert_numerical_values(flow):
     flow["appName_n"] = hash(flow["appName"])
     flow["protocolName_n"] = hash(flow["protocolName"])
-    flow["source_n"] = int(ipaddress.IPv4Address(flow["source"]))
-    flow["destination_n"] = int(ipaddress.IPv4Address(flow["destination"]))
+    flow["source_n"] = tuple([int(e) for e in flow["source"].split('.')])
+    flow["destination_n"] = tuple([int(e) for e in flow["destination"].split('.')])
     flow["direction_n"] = direction_converter(flow["direction"])
+    flow["sourcePayloadAsUTF_n"] = tuple(payload_hist(flow.get("sourcePayloadAsUTF", None)))
+    flow["destinationPayloadAsUTF_n"] = tuple(payload_hist(flow.get("destinationPayloadAsUTF", None)))
 
 def make_vector(flow):
     return (flow.get("totalSourceBytes", None),
@@ -35,5 +46,6 @@ def make_vector(flow):
             flow.get("destinationPort", None),
             flow.get("protocolName_n", None),
             flow.get("appName_n", None),
-            flow.get("Tag", None))
+            flow.get("sourcePayloadAsUTF_n", None),
+            flow.get("destinationPayloadAsUTF_n", None))
 
