@@ -1,4 +1,5 @@
 import pyhash
+import ipaddress
 
 hash = pyhash.murmur1_32()
 
@@ -18,8 +19,8 @@ def direction_converter(direction):
 def insert_numerical_values(flow):
     flow["appName_n"] = hash(flow["appName"])
     flow["protocolName_n"] = hash(flow["protocolName"])
-    flow["source_n"] = int(''.join(flow["source"].split('.')))
-    flow["destination_n"] = int(''.join(flow["destination"].split('.')))
+    flow["source_n"] = int(ipaddress.IPv4Address(flow["source"]))
+    flow["destination_n"] = int(ipaddress.IPv4Address(flow["destination"]))
     flow["direction_n"] = direction_converter(flow["direction"])
 
 def make_vector(flow):
@@ -33,5 +34,6 @@ def make_vector(flow):
             flow.get("sourcePort", None),
             flow.get("destinationPort", None),
             flow.get("protocolName_n", None),
-            flow.get("appName_n", None))
+            flow.get("appName_n", None),
+            flow.get("Tag", None))
 
