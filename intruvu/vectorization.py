@@ -2,23 +2,30 @@ from murmurhash import hash
 import re
 
 def direction_converter(direction):
-    ret = 0
+    ret = (0, 0)
     if direction == "L2R":
-        ret = 1
+        ret = (0, 1)
     elif direction == "R2L":
-        ret = 2
+        ret = (1, 0)
     elif direction == "L2L":
-        ret = 3
+        ret = (0, 0)
     elif direction == "R2R":
-        ret = 4
+        ret = (1, 1)
     return ret
+
+def protocol_converter(protocol):
+    protocols = ['tcp_ip', 'udp_ip', 'icmp_ip', 'igmp', 'ip', 'ipv6icmp', 'unknown']
+    pos = [0 if protocol == k else 1 for k in protocols]
+    if sum(pos) != 1:
+        pos[-1] = 1
+    return tuple(pos)
 
 
 def payload_hist(data):
     array = {chr(x): 0 for x in range(255)}
     if data is None:
         return array.values()
-    ascii_data = list(re.sub("[^\x00-\x7f]", "", data))
+    ascii_data = list(re.sub("[^\x00-\xff]", "", data))
     for d in ascii_data:
         array[d] = array[d] + 1
     assert len(array) == 255
@@ -26,8 +33,7 @@ def payload_hist(data):
 
 
 def insert_numerical_values(flow):
-    flow["appName_n"] = hash(flow["appName"])
-    flow["protocolName_n"] = hash(flow["protocolName"])
+    flow["protocolName_n"] = payload_hist(flow["protocolName"])
     flow["source_n"] = tuple([int(e) for e in flow["source"].split('.')])
     flow["destination_n"] = tuple([int(e) for e in flow["destination"].split('.')])
     flow["direction_n"] = direction_converter(flow["direction"])
@@ -45,7 +51,6 @@ def make_vector(flow):
             flow.get("sourcePort", None),
             flow.get("destinationPort", None),
             flow.get("protocolName_n", None),
-            flow.get("appName_n", None),
             flow.get("sourcePayloadAsUTF_n", None),
             flow.get("destinationPayloadAsUTF_n", None))
 

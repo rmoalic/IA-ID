@@ -1,10 +1,12 @@
 import argparse
 import shelve
+import random
 import matplotlib.pyplot as plt
 from elasticsearch import Elasticsearch
 from intruvu.flow import Flow
 from intruvu.flowES import FlowES
 from intruvu.loader import load_files, index_files
+from intruvu.ml import partition
 
 arg_parser = argparse.ArgumentParser(description='Intruder detection')
 arg_parser.add_argument("--cache", type=str, nargs=1, default="fourre-tout", required=False, help="name of the cache file")
@@ -33,15 +35,19 @@ ft = shelve.open(FT, 'r')
 # else:
 #flow = Flow([x for xs in ft.values() for x in xs])
 #
-per = flow.get_flows_per_packet()
-plt.loglog(*zip(*sorted(per.items())), linestyle='None', marker=".")
-plt.xlabel("packet/flow")
-plt.ylabel("flows")
-plt.show()
+# per = flow.get_flows_per_packet()
+# plt.loglog(*zip(*sorted(per.items())), linestyle='None', marker=".")
+# plt.xlabel("packet/flow")
+# plt.ylabel("flows")
+# plt.show()
 
-vect = flow.get_vectors_for_application("WebMediaAudio")
-for v in vect:
-    print(v)
+vect = flow.get_vectors_for_application("SMTP")
+random.shuffle(vect)
+part_vect = partition(vect, 5)
+
+test = None
+for v, p in enumerate(part_vect):
+    print("part {}: size {}".format(v, len(p)))
 
 print(flow.get_protocols())
 # print(flow.get_flows_for_protocol("igmp"))

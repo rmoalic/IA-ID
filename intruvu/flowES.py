@@ -52,7 +52,7 @@ class FlowES:
         for f in flows:
             f = insert_numerical_values(f)
         [make_vector(f) for f in flows]
-        return [make_vector(f) for f in flows]
+        return [(make_vector(f), f.get("Tag")) for f in flows]
 
     def get_flows_count_by_application(self):
         """Get the number of flows for each application"""
