@@ -1,6 +1,7 @@
 import argparse
 import shelve
 import random
+import sys
 import matplotlib.pyplot as plt
 from elasticsearch import Elasticsearch
 from intruvu.flow import Flow
@@ -41,13 +42,46 @@ ft = shelve.open(FT, 'r')
 # plt.ylabel("flows")
 # plt.show()
 
-vect = flow.get_vectors_for_application("SMTP")
-random.shuffle(vect)
-part_vect = partition(vect, 5)
+def make_group(n, part):
+    ret = list()
+    group_size = n // part
+    for i in range(part):
+        ret.extend([i for j in range(group_size)])
+    reste = n % part
+    if reste > 0:
+        ret.extend([0 for i in range(reste)])
+    return np.array(ret)
 
-test = None
-for v, p in enumerate(part_vect):
-    print("part {}: size {}".format(v, len(p)))
+import numpy as np
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.model_selection import GroupKFold
+from sklearn.utils import shuffle
+
+vect_l, expected_l = flow.get_vectors_for_application("SMTP")
+
+X = np.array(vect_l)
+y = np.array(expected_l)
+
+X, y = shuffle(X, y)
+
+group_kfold = GroupKFold(n_splits=5)
+
+group = make_group(len(X), 5)
+
+
+for train_index, test_index in group_kfold.split(X, y, group):
+    neigh = MultinomialNB()
+    #print("train", list(train_index))
+    #print("test", list(test_index))
+    neigh.fit(X[train_index], y[train_index])
+    score = neigh.score(X[test_index], y[test_index])
+    print("score", score)
+
+
+
+
+#sys.exit()
 
 print(flow.get_protocols())
 # print(flow.get_flows_for_protocol("igmp"))

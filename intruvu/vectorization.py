@@ -15,7 +15,7 @@ def direction_converter(direction):
 
 def protocol_converter(protocol):
     protocols = ['tcp_ip', 'udp_ip', 'icmp_ip', 'igmp', 'ip', 'ipv6icmp', 'unknown']
-    pos = [0 if protocol == k else 1 for k in protocols]
+    pos = [1 if protocol == k else 0 for k in protocols]
     if sum(pos) != 1:
         pos[-1] = 1
     return tuple(pos)
@@ -33,7 +33,7 @@ def payload_hist(data):
 
 
 def insert_numerical_values(flow):
-    flow["protocolName_n"] = payload_hist(flow["protocolName"])
+    flow["protocolName_n"] = protocol_converter(flow["protocolName"])
     flow["source_n"] = tuple([int(e) for e in flow["source"].split('.')])
     flow["destination_n"] = tuple([int(e) for e in flow["destination"].split('.')])
     flow["direction_n"] = direction_converter(flow["direction"])
@@ -45,12 +45,12 @@ def make_vector(flow):
             flow.get("totalDestinationBytes", None),
             flow.get("totalSourcePackets", None),
             flow.get("totalDestinationPackets", None),
-            flow.get("source_n", None),
-            flow.get("destination_n", None),
-            flow.get("direction_n", None),
+            *flow.get("source_n", None),
+            *flow.get("destination_n", None),
+            *flow.get("direction_n", None),
             flow.get("sourcePort", None),
             flow.get("destinationPort", None),
-            flow.get("protocolName_n", None),
-            flow.get("sourcePayloadAsUTF_n", None),
-            flow.get("destinationPayloadAsUTF_n", None))
+            *flow.get("protocolName_n", None),
+            *flow.get("sourcePayloadAsUTF_n", None),
+            *flow.get("destinationPayloadAsUTF_n", None))
 

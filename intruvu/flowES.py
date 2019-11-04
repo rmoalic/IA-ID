@@ -49,10 +49,13 @@ class FlowES:
     def get_vectors_for_application(self, app):
         """Get the list of flows for a given application"""
         flows = self.__get_flows("appName", app)
+        vect = list()
+        expected = list()
         for f in flows:
-            f = insert_numerical_values(f)
-        [make_vector(f) for f in flows]
-        return [(make_vector(f), f.get("Tag")) for f in flows]
+            insert_numerical_values(f)
+            vect.append(make_vector(f))
+            expected.append(0 if f.get("Tag") == "Normal" else 1)
+        return vect, expected
 
     def get_flows_count_by_application(self):
         """Get the number of flows for each application"""
@@ -120,13 +123,13 @@ class FlowES:
             ]
         }
         hits = self.es.search(index=self.index_name, body=json.dumps(agg), scroll='2m', size=10000)
-        res = copy.deepcopy(hits['hits']['hits'])
+        res = hits['hits']['hits']
         sid = hits['_scroll_id']
         while len(hits['hits']['hits']) > 0:
             hits = self.es.scroll(scroll_id=sid, scroll='2m')
             print("scroll", len(res), len(hits['hits']['hits']))
             sid = hits['_scroll_id']
-            res.extend(copy.deepcopy(hits['hits']['hits']))
+            res.extend(hits['hits']['hits'])
         return [e['_source'] for e in res]
 
 
