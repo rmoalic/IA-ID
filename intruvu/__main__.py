@@ -7,7 +7,7 @@ from elasticsearch import Elasticsearch
 from intruvu.flow import Flow
 from intruvu.flowES import FlowES
 from intruvu.loader import load_files, index_files
-from intruvu.ml import partition
+from intruvu.ml import partition, stats
 
 arg_parser = argparse.ArgumentParser(description='Intruder detection')
 arg_parser.add_argument("--cache", type=str, nargs=1, default="fourre-tout", required=False, help="name of the cache file")
@@ -55,8 +55,11 @@ def make_group(n, part):
 import numpy as np
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import MultinomialNB
+from sklearn.linear_model import SGDClassifier
+from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import GroupKFold
 from sklearn.utils import shuffle
+from sklearn.metrics import roc_curve
 
 vect_l, expected_l = flow.get_vectors_for_application("SMTP")
 
@@ -69,19 +72,30 @@ group_kfold = GroupKFold(n_splits=5)
 
 group = make_group(len(X), 5)
 
+def plot_roc_curve(fpr, tpr, name):
+    plt.plot(fpr, tpr, color='orange', label='ROC')
+    plt.plot([0, 1], [0, 1], color='darkblue', linestyle='--')
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('ROC {}'.format(name))
+    plt.legend()
+    plt.show()
 
 for train_index, test_index in group_kfold.split(X, y, group):
-    neigh = MultinomialNB()
-    #print("train", list(train_index))
-    #print("test", list(test_index))
+    neigh = MLPClassifier(solver="adam")
     neigh.fit(X[train_index], y[train_index])
-    score = neigh.score(X[test_index], y[test_index])
-    print("score", score)
+
+    probs = neigh.predict_proba(X[test_index])[:, 1] # positive class proba
+    fpr, tpr, thresholds = roc_curve(y[test_index], probs)
+    plot_roc_curve(fpr, tpr, type(neigh).__name__)
+
+    stats_r = stats(neigh, X[test_index], y[test_index])
+    print("accuracy {:.4f} time {:4.0f}ms false_positive {:4d} false_negative {:4d} recall {:.4f} prec {:.4f} F1 {:.4f}".format(*stats_r))
 
 
 
 
-#sys.exit()
+sys.exit()
 
 print(flow.get_protocols())
 # print(flow.get_flows_for_protocol("igmp"))

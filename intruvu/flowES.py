@@ -1,6 +1,6 @@
 import json
 import copy
-from vectorization import insert_numerical_values, make_vector
+from intruvu.vectorization import insert_numerical_values, make_vector
 
 class FlowES:
 
