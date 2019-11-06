@@ -124,14 +124,18 @@ class FlowES:
         }
         hits = self.es.search(index=self.index_name, body=json.dumps(agg), scroll='2m', size=10000)
         res = hits['hits']['hits']
+        for r in res:
+            yield r['_source']
         sid = hits['_scroll_id']
+        total = len(res)
         while len(hits['hits']['hits']) > 0:
             hits = self.es.scroll(scroll_id=sid, scroll='2m')
-            print("scroll", len(res), len(hits['hits']['hits']))
+            print("scroll", total, len(hits['hits']['hits']))
             sid = hits['_scroll_id']
-            res.extend(hits['hits']['hits'])
-        return [e['_source'] for e in res]
-
+            res = (hits['hits']['hits'])
+            for r in res:
+                yield r['_source']
+            total = total + len(res)
 
     def __count(self, name):
         agg = {

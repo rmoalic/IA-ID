@@ -33,7 +33,10 @@ def payload_hist(data):
 
 
 def insert_numerical_values(flow):
-    flow["protocolName_n"] = protocol_converter(flow["protocolName"])
+    if ("protocolName" not in flow):
+        print("warning: no protocol name, vectorisation impacted for flow")
+        return
+    flow["protocolName_n"] = protocol_converter(flow.get("protocolName", None))
     flow["source_n"] = tuple([int(e) for e in flow["source"].split('.')])
     flow["destination_n"] = tuple([int(e) for e in flow["destination"].split('.')])
     flow["direction_n"] = direction_converter(flow["direction"])
@@ -41,16 +44,16 @@ def insert_numerical_values(flow):
     flow["destinationPayloadAsUTF_n"] = tuple(payload_hist(flow.get("destinationPayloadAsUTF", None)))
 
 def make_vector(flow):
-    return (flow.get("totalSourceBytes", None),
-            flow.get("totalDestinationBytes", None),
-            flow.get("totalSourcePackets", None),
-            flow.get("totalDestinationPackets", None),
-            *flow.get("source_n", None),
-            *flow.get("destination_n", None),
-            *flow.get("direction_n", None),
-            flow.get("sourcePort", None),
-            flow.get("destinationPort", None),
-            *flow.get("protocolName_n", None),
-            *flow.get("sourcePayloadAsUTF_n", None),
-            *flow.get("destinationPayloadAsUTF_n", None))
+    return (flow.get("totalSourceBytes", 0),
+            flow.get("totalDestinationBytes", 0),
+            flow.get("totalSourcePackets", 0),
+            flow.get("totalDestinationPackets", 0),
+            *flow.get("source_n", (0,0,0,0)),
+            *flow.get("destination_n", (0,0,0,0)),
+            *flow.get("direction_n", (0,0)),
+            flow.get("sourcePort", 0),
+            flow.get("destinationPort", 0),
+            *flow.get("protocolName_n", tuple([0 for x in range(7)])),
+            *flow.get("sourcePayloadAsUTF_n", tuple([0 for x in range(255)])),
+            *flow.get("destinationPayloadAsUTF_n", tuple([0 for x in range(255)])))
 
