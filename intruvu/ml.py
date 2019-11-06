@@ -51,18 +51,25 @@ def train_classifier(classifier, vect_l, expected_l, nb_group=5, normalizer=True
 
     group = make_group(len(X), nb_group)
 
-    for train_index, test_index in group_kfold.split(X, y, group):
+    for i, (train_index, test_index) in enumerate(group_kfold.split(X, y, group)):
         classifier.fit(X[train_index], y[train_index])
 
         probs = classifier.predict_proba(X[test_index])[:, 1]  # positive class proba
         fpr, tpr, thresholds = roc_curve(y[test_index], probs)
-        plot_roc_curve(fpr, tpr, name)
+        plot_roc_curve(fpr, tpr, "{} - {}".format(name, i))
         AUC = auc(fpr, tpr)
         stats_r = stats(classifier, X[test_index], y[test_index])
-        print("accuracy {:.4f} time {:4.0f}ms false_positive {:4d} false_negative {:4d} recall {:.4f} prec {:.4f} F1 {:.4f} AUC {:.4f} name {}".format(*stats_r, AUC, name))
+        print("accuracy {:.4f} time {:4.0f}ms false_positive {:4d} false_negative {:4d} recall {:.4f} prec {:.4f} F1 {:.4f} AUC {:.4f} name {}-{}".format(*stats_r, AUC, name, i))
 
 
 def plot_roc_curve(fpr, tpr, name):
+    """
+    Draw a roc curve
+
+    :param fpr: false positives rates (array)
+    :param tpr: true positives rates (array)
+    :param name: diagram name
+    """
     plt.plot(fpr, tpr, color='orange', label='ROC')
     plt.plot([0, 1], [0, 1], color='darkblue', linestyle='--')
     plt.xlabel('False Positive Rate')
@@ -73,6 +80,20 @@ def plot_roc_curve(fpr, tpr, name):
 
 
 def make_group(n, part):
+    """
+    Create a list containing n elements, with different parts of equal sizes
+    if n isn't dividable by part, the result is padded with 0's
+
+    >>> make_group(9, 3)
+    array([0, 0, 0, 1, 1, 1, 2, 2, 2])
+
+    >>> make_group(9, 2)
+    array([0, 0, 0, 0, 1, 1, 1, 1, 0])
+
+    :param n: number of elements
+    :param part: numbers of parts to create
+    :return: an array
+    """
     ret = list()
     group_size = n // part
     for i in range(part):
@@ -80,4 +101,5 @@ def make_group(n, part):
     reste = n % part
     if reste > 0:
         ret.extend([0 for i in range(reste)])
+    assert len(ret) == n
     return np.array(ret)

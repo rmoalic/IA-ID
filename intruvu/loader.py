@@ -46,6 +46,15 @@ def load_files(dir_a, store=None):
 
 
 def index_files(dir_a, index_name, es, bulk_size=25000000):
+    """
+    Load flow from all xml files in given directory to an elasticsearch index
+    If the index already exist, it is dropped
+
+    :param dir_a: directory to load xml files from
+    :param index_name: elasticsearch index name
+    :param es: elasticsearch connection
+    :param bulk_size: max batch size in bytes
+    """
     files = [path.join(dir_a, x) for x in listdir(dir_a) if ".xml" in x]
     if es.indices.exists(index_name):
         print("dropping index: {}".format(index_name))
