@@ -9,6 +9,14 @@ from sklearn.preprocessing import normalize, MinMaxScaler, StandardScaler
 
 
 def stats(classifier, X, y):
+    """
+    Make some statistics about a prediction
+
+    :param classifier: the classifier used for the test
+    :param X: the flows vectors used for the test (list)
+    :param y: the tags of the flows used for the test (list)
+    :return: some metrics about the test
+    """
     assert len(X) == len(y)
     start_time = time.time()
     size = len(X)
@@ -38,6 +46,15 @@ def stats(classifier, X, y):
 
 
 def train_classifier(classifier, vect_l, expected_l, nb_group=5, normalizer=True):
+    """
+    Train a classifier and test it
+
+    :param classifier: the classifier
+    :param vect_l: the flows vectors for an application (list)
+    :param expected_l: the tags of the flows (list)
+    :param nb_group: the number of folds used for cross-validation
+    :param normalizer: true to normalize data, false otherwise
+    """
     name = type(classifier).__name__
     X = np.array(vect_l)
     y = np.array(expected_l)
