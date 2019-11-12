@@ -15,12 +15,18 @@ from intruvu.ml import train_classifier
 ###############
 
 arg_parser = argparse.ArgumentParser(description='Intruder detection')
-arg_parser.add_argument("--cache", type=str, nargs=1, default=["fourre-tout"], required=False, help="name of the cache file")
-arg_parser.add_argument("--dir", type=str, nargs=1, default=["./ISCX_train"], required=False, help="directory to load the xml files from")
-arg_parser.add_argument("-e", action='store_true', required=False, help="process one file only")
-arg_parser.add_argument("-r", action='store_true', required=False, help="reindex")
-arg_parser.add_argument("--index", type=str, nargs=1, default=["flow"], required=False, help="index name")
-arg_parser.add_argument("-d", action='store_true', required=False, help="draw ”ranked” distribution #Flows v.s. #Packets")
+# arg_parser.add_argument("--cache", type=str, nargs=1, default=["fourre-tout"], required=False, help="name of the cache file")
+# arg_parser.add_argument("-e", action='store_true', required=False, help="process one file only")
+arg_parser.add_argument("--dir", type=str, nargs=1, default=["./ISCX_train"], required=False, help=
+"""Directory to load the XML file(s) from.
+This directory contain the file(s) used for the classification.
+default: "./ISCX_train" """)
+arg_parser.add_argument("-r", action='store_true', required=False, help=
+"""Index files to ElasticSearch and exit the program.
+Files must be indexed before working with classifiers.""")
+arg_parser.add_argument("--index", type=str, nargs=1, default=["flow"], required=False, help=
+"""Name of the ElasticSearch index to use.
+default: "flow" """)
 
 args = arg_parser.parse_args()
 

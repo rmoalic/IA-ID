@@ -11,12 +11,25 @@ from intruvu.ml import train_classifier
 ## Arguments ##
 ###############
 
-arg_parser = argparse.ArgumentParser(description='Intruder detection - defi')
-arg_parser.add_argument("--dir-train", type=str, nargs=1, default=["./defi_train"], required=False, help="directory to load the xml files from")
-arg_parser.add_argument("--dir-test", type=str, nargs=1, default=["./defi_test"], required=False, help="directory to load the xml test files from")
-arg_parser.add_argument("-r", action='store_true', required=False, help="reindex")
-arg_parser.add_argument("--index", type=str, nargs=1, default=["flow"], required=False, help="index name")
-arg_parser.add_argument("--output", type=str, nargs=1, default=["output.txt"], required=False, help="index name")
+arg_parser = argparse.ArgumentParser(description='Intruder detection - défi', formatter_class=argparse.RawTextHelpFormatter)
+arg_parser.add_argument("-r", action='store_true', required=False, help=
+"""Index files to ElasticSearch and exit the program.
+Files must be indexed before working with classifiers.""")
+arg_parser.add_argument("--index", type=str, nargs=1, default=["flow"], required=False, help=
+"""Name of the ElasticSearch index to use.
+default: "flow" """)
+arg_parser.add_argument("--dir_train", type=str, nargs=1, default=["./defi_train"], required=False, help=
+"""Directory to load the XML training file(s) from.
+This directory contain the file(s) used for the training.
+It shouldn't contain any file with unknown tag.
+default: "./defi_train" """)
+arg_parser.add_argument("--dir_test", type=str, nargs=1, default=["./defi_test"], required=False, help=
+"""Directory to load the XML test file(s) from.
+This directory contain the file(s) used for the test.
+default: "./defi_test" """)
+arg_parser.add_argument("--output", type=str, nargs=1, default=["output.txt"], required=False, help=
+"""Name of the output file containing the results.
+default: "output" """)
 
 args = arg_parser.parse_args()
 
@@ -30,8 +43,8 @@ print(es.info())
 index_name = args.index[0]
 
 if args.r:
-    index_files(args['dir-train'][0], index_name, es)
-    index_files(args['dir-test'][0], index_name+'_test', es)
+    index_files(args.dir_train[0], index_name, es)
+    index_files(args.dir_test[0], index_name+'_test', es)
     print('all files indexed !')
     sys.exit()
 
