@@ -8,7 +8,6 @@ from intruvu.flow import Flow
 from intruvu.flowES import FlowES
 from intruvu.loader import load_files, index_files
 from intruvu.ml import train_classifier
-from intruvu.defi import defi
 
 
 ###############
@@ -50,30 +49,18 @@ FT = args.cache
 es = Elasticsearch()
 print(es.info())
 
+index_name = args.index[0]
+
 if args.r:
-    index_files(args.dir[0], args.index[0], es)
+    index_files(args.dir[0], index_name, es)
 
-flow = FlowES(es, args.index[0])
-flow_test = FlowES(es, args.index[0]+'_test')
-
-
-##############
-## Zipf law ##
-##############
-
-if args.d:
-    per = flow.get_flows_per_packet()
-    plt.loglog(*zip(*sorted(per.items())), linestyle='None', marker=".")
-    plt.xlabel("packet/flow")
-    plt.ylabel("flows")
-    plt.show()
-
+flow = FlowES(es, index_name)
 
 ######################
 ## Machine Learning ##
 ######################
 
-vect_l, expected_l = flow.get_vectors_for_application("HTTPWeb")
+vect_l, expected_l = flow.get_vectors_for_application("SMTP")
 
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB, MultinomialNB
@@ -82,21 +69,12 @@ from sklearn.neural_network import MLPClassifier
 
 classifier = KNeighborsClassifier()
 train_classifier(classifier, vect_l, expected_l)
-
-vect_t, expected_t = flow_test.get_vectors_for_application("HTTPWeb")
-
-defi(classifier, vect_t)
-
-
-# classifier = GaussianNB()
-# train_classifier(classifier, vect_l, expected_l)
-# classifier = MultinomialNB()
-# train_classifier(classifier, vect_l, expected_l)
-# classifier = MLPClassifier()
-# train_classifier(classifier, vect_l, expected_l)
-
-#sys.exit()
-
+classifier = GaussianNB()
+train_classifier(classifier, vect_l, expected_l)
+classifier = MultinomialNB()
+train_classifier(classifier, vect_l, expected_l)
+classifier = MLPClassifier()
+train_classifier(classifier, vect_l, expected_l)
 
 #######################
 ## Print information ##
@@ -113,5 +91,4 @@ print(list(flow.get_flows_for_application("WebMediaAudio")))
 # print(flow.get_payload_by_application())
 print(flow.get_bytes_count_by_application())
 print(flow.get_packets_count_by_application())
-#
-# ft.close()
+
