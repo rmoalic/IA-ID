@@ -32,6 +32,8 @@ index_name = args.index[0]
 
 if args.r:
     index_files(args.dir[0], index_name, es)
+    print('all files indexed !')
+    sys.exit()
 
 flow = FlowES(es, index_name)
 
