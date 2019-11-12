@@ -63,16 +63,25 @@ from sklearn.naive_bayes import GaussianNB, MultinomialNB
 from sklearn.linear_model import SGDClassifier
 from sklearn.neural_network import MLPClassifier
 
-classifier = KNeighborsClassifier()
-train_classifier(classifier, vect_l, expected_l)
+classifier = GaussianNB()
+# train_classifier(classifier, vect_l, expected_l)
+
+print("train")
+X = np.array(vect_l)
+y = np.array(expected_l)
+X = normalize(X)
+classifier.fit(X, y)
+print("end train")
 
 vect_t, expected_t = flow_test.get_vectors_for_application("HTTPWeb")
 del expected_t
 
+print("predict")
 X = np.array(vect_t)
 X = normalize(X)
 predictions = classifier.predict(X)
 predictions_proba = classifier.predict_proba(X)
+print("end predict")
 
 with open(args.output[0], "wt") as f:
     for pred, score in zip(predictions, predictions_proba):
