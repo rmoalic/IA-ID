@@ -15,11 +15,11 @@ from intruvu.ml import train_classifier
 ###############
 
 arg_parser = argparse.ArgumentParser(description='Intruder detection')
-arg_parser.add_argument("--cache", type=str, nargs=1, default="fourre-tout", required=False, help="name of the cache file")
-arg_parser.add_argument("--dir", type=str, nargs=1, default="./ISCX_train", required=False, help="directory to load the xml files from")
+arg_parser.add_argument("--cache", type=str, nargs=1, default=["fourre-tout"], required=False, help="name of the cache file")
+arg_parser.add_argument("--dir", type=str, nargs=1, default=["./ISCX_train"], required=False, help="directory to load the xml files from")
 arg_parser.add_argument("-e", action='store_true', required=False, help="process one file only")
 arg_parser.add_argument("-r", action='store_true', required=False, help="reindex")
-arg_parser.add_argument("--index", type=str, nargs=1, default="flow", required=False, help="index name")
+arg_parser.add_argument("--index", type=str, nargs=1, default=["flow"], required=False, help="index name")
 arg_parser.add_argument("-d", action='store_true', required=False, help="draw ”ranked” distribution #Flows v.s. #Packets")
 
 args = arg_parser.parse_args()
@@ -69,7 +69,7 @@ from sklearn.naive_bayes import GaussianNB, MultinomialNB
 from sklearn.linear_model import SGDClassifier
 from sklearn.neural_network import MLPClassifier
 
-classifier = KNeighborsClassifier()
+classifier = KNeighborsClassifier(5)
 train_classifier(classifier, vect_l, expected_l)
 classifier = GaussianNB()
 train_classifier(classifier, vect_l, expected_l)
