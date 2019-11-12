@@ -56,7 +56,7 @@ train_classifier(classifier, vect_l, expected_l)
 vect_t, expected_t = flow_test.get_vectors_for_application("HTTPWeb")
 del expected_t
 
-X = np.array(vect_l)
+X = np.array(vect_t)
 X = normalize(X)
 predictions = classifier.predict(X)
 predictions_proba = classifier.predict_proba(X)
