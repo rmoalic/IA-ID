@@ -8,6 +8,7 @@ from intruvu.flow import Flow
 from intruvu.flowES import FlowES
 from intruvu.loader import load_files, index_files
 from intruvu.ml import train_classifier
+from intruvu.defi import defi
 
 
 ###############
@@ -19,6 +20,7 @@ arg_parser.add_argument("--cache", type=str, nargs=1, default="fourre-tout", req
 arg_parser.add_argument("--dir", type=str, nargs=1, default="./ISCX_train", required=False, help="directory to load the xml files from")
 arg_parser.add_argument("-e", action='store_true', required=False, help="process one file only")
 arg_parser.add_argument("-r", action='store_true', required=False, help="reindex")
+arg_parser.add_argument("--index", type=str, nargs=1, default="flow", required=False, help="index name")
 arg_parser.add_argument("-d", action='store_true', required=False, help="draw ”ranked” distribution #Flows v.s. #Packets")
 
 args = arg_parser.parse_args()
@@ -49,9 +51,10 @@ es = Elasticsearch()
 print(es.info())
 
 if args.r:
-    index_files(args.dir, "flow", es)
+    index_files(args.dir[0], args.index[0], es)
 
-flow = FlowES(es, "flow")
+flow = FlowES(es, args.index[0])
+flow_test = FlowES(es, args.index[0]+'_test')
 
 
 ##############
@@ -70,7 +73,7 @@ if args.d:
 ## Machine Learning ##
 ######################
 
-vect_l, expected_l = flow.get_vectors_for_application("SMTP")
+vect_l, expected_l = flow.get_vectors_for_application("HTTPWeb")
 
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB, MultinomialNB
@@ -79,12 +82,18 @@ from sklearn.neural_network import MLPClassifier
 
 classifier = KNeighborsClassifier()
 train_classifier(classifier, vect_l, expected_l)
-classifier = GaussianNB()
-train_classifier(classifier, vect_l, expected_l)
-classifier = MultinomialNB()
-train_classifier(classifier, vect_l, expected_l)
-classifier = MLPClassifier()
-train_classifier(classifier, vect_l, expected_l)
+
+vect_t, expected_t = flow_test.get_vectors_for_application("HTTPWeb")
+
+defi(classifier, vect_t)
+
+
+# classifier = GaussianNB()
+# train_classifier(classifier, vect_l, expected_l)
+# classifier = MultinomialNB()
+# train_classifier(classifier, vect_l, expected_l)
+# classifier = MLPClassifier()
+# train_classifier(classifier, vect_l, expected_l)
 
 #sys.exit()
 
