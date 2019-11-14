@@ -39,6 +39,18 @@ python defi.py
                         default: "output"
 ```
 
+### Use exemple
+
+1. Index files to ElasticSearch index "defi" from directories "train/" and "test/" containing training files and test files:
+    ```bash
+    python defi.py -r --index defi --dir_train train --dir_test test
+    ```
+
+1. Train and classify test flows from index "defi" and print results to "results.txt" file:
+    ```bash
+    python defi.py --index defi --output results.txt
+    ```
+
 ## Main
 
 Main file we used for the project.
