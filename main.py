@@ -2,6 +2,7 @@ import argparse
 import shelve
 import random
 import sys
+from collections import Counter
 import matplotlib.pyplot as plt
 from elasticsearch import Elasticsearch
 from intruvu.flow import Flow
@@ -29,8 +30,6 @@ arg_parser.add_argument("--index", type=str, nargs=1, default=["flow"], required
 default: "flow" """)
 
 args = arg_parser.parse_args()
-
-FT = args.cache
 
 
 ############
@@ -68,7 +67,10 @@ flow = FlowES(es, index_name)
 ## Machine Learning ##
 ######################
 
-vect_l, expected_l = flow.get_vectors_for_application("SMTP")
+vect_l, expected_l = flow.get_vectors_for_application("HTTPWeb", limit=None)
+classes = Counter(expected_l)
+print("classes", classes)
+assert len(classes) >= 2, "Il faut au minimum deux classes pour classifier"
 
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB, MultinomialNB
@@ -81,7 +83,7 @@ classifier = GaussianNB()
 train_classifier(classifier, vect_l, expected_l)
 classifier = MultinomialNB()
 train_classifier(classifier, vect_l, expected_l)
-classifier = MLPClassifier()
+classifier = MLPClassifier(alpha=1e-4, hidden_layer_sizes=(100,50), random_state=1, verbose=True)
 train_classifier(classifier, vect_l, expected_l)
 
 #######################
