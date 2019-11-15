@@ -53,7 +53,7 @@ python defi.py
 
 ## Main
 
-Main file we used for the project.
+Main file we used for the project. Its main use is to facilitate the comparison of different classifier.
 
 ### Execution
 

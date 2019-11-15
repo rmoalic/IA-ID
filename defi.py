@@ -1,5 +1,6 @@
 import argparse
 import sys
+from collections import Counter
 import numpy as np
 from sklearn.preprocessing import normalize
 from elasticsearch import Elasticsearch
@@ -57,6 +58,7 @@ flow_test = FlowES(es, args.index[0]+'_test')
 ######################
 
 vect_l, expected_l = flow.get_vectors_for_application("HTTPWeb")
+print("classes", Counter(expected_l))
 
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB, MultinomialNB

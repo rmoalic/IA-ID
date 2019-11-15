@@ -46,15 +46,18 @@ class FlowES:
         """Get the list of flows for a given application"""
         return self.__get_flows("appName", app)
 
-    def get_vectors_for_application(self, app):
+    def get_vectors_for_application(self, app, limit=None):
         """Get the list of flows for a given application"""
         flows = self.__get_flows("appName", app)
         vect = list()
         expected = list()
-        for f in flows:
+        for i, f in enumerate(flows):
             insert_numerical_values(f)
             vect.append(make_vector(f))
             expected.append(0 if f.get("Tag") == "Normal" else 1)
+            if limit is not None and limit < i:
+                break
+        assert len(vect) == len(expected)
         return vect, expected
 
     def get_flows_count_by_application(self):
