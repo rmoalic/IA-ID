@@ -67,7 +67,7 @@ flow = FlowES(es, index_name)
 ## Machine Learning ##
 ######################
 
-vect_l, expected_l = flow.get_vectors_for_application("HTTPWeb", limit=None)
+vect_l, expected_l = flow.get_vectors_for_application("HTTPWeb", limit=10000)
 classes = Counter(expected_l)
 print("classes", classes)
 assert len(classes) >= 2, "Il faut au minimum deux classes pour classifier"
@@ -79,11 +79,11 @@ from sklearn.neural_network import MLPClassifier
 
 classifier = KNeighborsClassifier(5)
 train_classifier(classifier, vect_l, expected_l)
-classifier = GaussianNB()
-train_classifier(classifier, vect_l, expected_l)
 classifier = MultinomialNB()
 train_classifier(classifier, vect_l, expected_l)
-classifier = MLPClassifier(alpha=1e-4, hidden_layer_sizes=(100,50), random_state=1, verbose=True)
+classifier = GaussianNB()
+train_classifier(classifier, vect_l, expected_l)
+classifier = MLPClassifier(alpha=1e-4, hidden_layer_sizes=(100,50), random_state=1)
 train_classifier(classifier, vect_l, expected_l)
 
 #######################

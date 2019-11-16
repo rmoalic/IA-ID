@@ -68,20 +68,20 @@ def train_classifier(classifier, vect_l, expected_l, nb_group=5, normalizer=True
 
     group = make_group(len(X), nb_group)
 
-    all_fpr = np.array([])
-    all_tpr = np.array([])
+    # all_fpr = np.array([])
+    # all_tpr = np.array([])
     for i, (train_index, test_index) in enumerate(group_kfold.split(X, y, group)):
         classifier.fit(X[train_index], y[train_index])
 
         probs = classifier.predict_proba(X[test_index])[:, 1]  # positive class proba
         fpr, tpr, thresholds = roc_curve(y[test_index], probs)
-        all_fpr = np.concatenate((all_fpr, fpr))
-        all_tpr = np.concatenate((all_tpr, tpr))
+        # all_fpr = np.concatenate((all_fpr, fpr))
+        # all_tpr = np.concatenate((all_tpr, tpr))
         plot_roc_curve(fpr, tpr, "{} - {}".format(name, i))
         AUC = auc(fpr, tpr)
         stats_r = stats(classifier, X[test_index], y[test_index])
         print("accuracy {:.4f} time {:4.0f}ms false_positive {:4d} false_negative {:4d} recall {:.4f} prec {:.4f} F1 {:.4f} AUC {:.4f} name {}-{}".format(*stats_r, AUC, name, i))
-    plot_roc_curve(all_fpr, all_tpr, "mean {}".format(name))
+    # plot_roc_curve(all_fpr, all_tpr, "mean {}".format(name))
 
 
 def plot_roc_curve(fpr, tpr, name):

@@ -16,7 +16,7 @@ arg_parser = argparse.ArgumentParser(description='Intruder detection - défi', f
 arg_parser.add_argument("-r", action='store_true', required=False, help=
 """Index files to ElasticSearch and exit the program.
 Files must be indexed before working with classifiers.""")
-arg_parser.add_argument("--index", type=str, nargs=1, default=["flow"], required=False, help=
+arg_parser.add_argument("--index", type=str, nargs=1, default=["defi"], required=False, help=
 """Name of the ElasticSearch index to use.
 default: "flow" """)
 arg_parser.add_argument("--dir_train", type=str, nargs=1, default=["./defi_train"], required=False, help=
@@ -65,7 +65,7 @@ from sklearn.naive_bayes import GaussianNB, MultinomialNB
 from sklearn.linear_model import SGDClassifier
 from sklearn.neural_network import MLPClassifier
 
-classifier = GaussianNB()
+classifier = KNeighborsClassifier(5)
 # train_classifier(classifier, vect_l, expected_l)
 
 print("train")
