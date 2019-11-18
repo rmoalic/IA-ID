@@ -216,7 +216,7 @@ Ensuite, nous constatons que les classifieurs K Nearest Neighbors et Multi Layer
 Il est difficile au vu des résultats accumulés de faire un choix entre ces deux classifieurs.
 
 Le MLP peut souvent obtenir une aire sous la courbe ainsi qu'un score F1 de 1, ce qui représente un résultat parfait.
-Cependant, selon les protocoles, ces résultats peuvent aussi diminuer et ne plus être aussi bons, notamment le score F1.
+Cependant, selon les protocoles, ces résultats peuvent aussi diminuer et ne plus être aussi bons, notamment le score F1, comme on peut le voir par exemple avec le protocole SMTP.
 
 Au contraire, les résultats du KNN sont relativement stables pour chaque protocole, et même s'ils n'atteignent pas forcément le score de 1 aussi souvent que le MLP, ils en sont toujours très proches, que nous regardions l'aire sous la courbe ou le score F1.
 

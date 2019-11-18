@@ -1,8 +1,10 @@
-Évalutation de la fonction de distance
+Évaluation de la fonction de distance
 ======================================
 
-HTTPWeb 
+Protocole HTTPWeb 
+
 50000 flows
+
 fichier défi
 
 KNN avec 5 voisins
@@ -68,9 +70,12 @@ accuracy 0.9790 time 18804ms false_positive  107 false_negative  103 recall 0.97
 
 ```
 
-Conslusion
+Conclusion
 ==========
 
-Au vu des indicateurs, la fonction canberra est la meilleur. Mais elle est très lente, la fonction manhattan est moin bonne mais s'execute en un temps plus résonable.
-Elle semble plus adapter à notre utilisation.
+Au vu des indicateurs, la fonction Canberra donne les meilleurs résultats.
+
+Cependant elle est très lente, tandis que la fonction Manhattan est légèrement en dessous mais s'exécute en un temps plus raisonnable.
+
+La fonction Manhattan semble donc être plus adaptée à notre utilisation.
 
