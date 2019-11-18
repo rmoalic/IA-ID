@@ -77,7 +77,7 @@ from sklearn.naive_bayes import GaussianNB, MultinomialNB
 from sklearn.linear_model import SGDClassifier
 from sklearn.neural_network import MLPClassifier
 
-classifier = KNeighborsClassifier(5)
+classifier = KNeighborsClassifier(5, metric="manhattan")
 train_classifier(classifier, vect_l, expected_l)
 classifier = MultinomialNB()
 train_classifier(classifier, vect_l, expected_l)
