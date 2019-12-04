@@ -1,6 +1,8 @@
 Intruvu
 =======
 
+Data files are generated using the ISCX generator.
+
 ## Installation
 
 ```bash
